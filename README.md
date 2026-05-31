@@ -48,11 +48,11 @@ Three marker types, one line each:
 
 | Marker | When to use | Example |
 |---|---|---|
-| `decision:` | You picked between options | `decision: hiring \| Pause backend hiring through Q3, focus on infra` |
-| `analysis:` | You found a non-obvious cause or pattern | `analysis: churn \| 60% of churn happens in week 1 — onboarding is the lever` |
-| `principle:` | You set a rule going forward | `principle: pr-size \| Every PR over 500 lines must be split` |
+| `결정 / decision` | You picked between options | `decision: hiring \| Pause backend hiring through Q3, focus on infra` |
+| `판단 / analysis` | You found a non-obvious cause or pattern | `analysis: churn \| 60% of churn happens in week 1 — onboarding is the lever` |
+| `원칙 / principle` | You set a rule going forward | `principle: pr-size \| Every PR over 500 lines must be split` |
 
-Korean aliases work too: `결정:` / `판단:` / `원칙:`
+Both Korean and English forms work — use whichever feels natural. The extractor accepts both.
 
 When markers appear in a conversation, the `decision-extractor` agent appends them to a local file (`state/recall_trace.jsonl`). The `/recall` command reads that file back.
 

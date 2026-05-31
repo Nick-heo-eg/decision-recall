@@ -57,11 +57,13 @@ No trace yet, start using the skill.
 
 ## First real use
 
-In a normal Claude Code conversation, after you make a real decision, write:
+In a normal Claude Code conversation, after you make a real decision, write one line in this format:
 
 ```
-결정: <topic-slug> | <one-line content>
+결정 / decision: <topic-slug> | <one-line content>
 ```
+
+(Use whichever you prefer — both Korean `결정 / 판단 / 원칙` and English `decision / analysis / principle` are accepted.)
 
 Then ask Claude:
 

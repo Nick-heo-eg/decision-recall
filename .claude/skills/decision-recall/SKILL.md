@@ -20,9 +20,11 @@ Captures decisions, analyses, and principles from your Claude Code conversations
 ## How it works
 
 Three marker types automatically extracted from conversations:
-- `결정:` / `decision:` — a choice was made (what to do)
-- `판단:` / `analysis:` — an observation or analysis (what was found)
-- `원칙:` / `principle:` — a rule or pattern (what holds going forward)
+- `결정 / decision:` — a choice was made (what to do)
+- `판단 / analysis:` — an observation or analysis (what was found)
+- `원칙 / principle:` — a rule or pattern (what holds going forward)
+
+Both Korean and English forms are valid. Write whichever feels natural; the extractor accepts both.
 
 Each marker captured with `topic | one-line content` format, appended to `state/recall_trace.jsonl`.
 

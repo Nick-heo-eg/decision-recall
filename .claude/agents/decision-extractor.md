@@ -9,16 +9,22 @@ You extract structured judgment markers from a Claude Code conversation and appe
 
 ## Marker format (only these 3)
 
+Each marker type accepts both Korean and English forms:
+
 ```
-결정: <topic> | <one-line content>
-판단: <topic> | <one-line content>
-원칙: <topic> | <one-line content>
+결정 / decision: <topic> | <one-line content>
+판단 / analysis: <topic> | <one-line content>
+원칙 / principle: <topic> | <one-line content>
 ```
 
-English aliases also accepted:
-- `decision:` = `결정:`
-- `analysis:` = `판단:`
-- `principle:` = `원칙:`
+Examples — any of these are valid input lines:
+
+```
+결정: hiring-freeze | Pause backend hiring through end of Q3
+decision: hiring-freeze | Pause backend hiring through end of Q3
+판단: api-latency | p99 spiked after deploy 142
+analysis: api-latency | p99 spiked after deploy 142
+```
 
 ## Extraction rules
 
