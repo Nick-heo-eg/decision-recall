@@ -88,7 +88,7 @@ You should see your entry.
 → The `decision-extractor` agent didn't run yet. Ask Claude to invoke it on the previous message explicitly.
 
 **"trace file not found"**
-→ Make sure you're in the right cwd; `state/recall_trace.jsonl` is project-local. Or check `~/decision-recall/state/recall_trace.jsonl`.
+→ Check `~/decision-recall/state/recall_trace.jsonl` directly (cwd doesn't matter — trace is at a single canonical path across all projects).
 
 **Markers extracted but content is empty**
 → Content must be ≥ 10 characters. Tighten your `| ...` portion.
