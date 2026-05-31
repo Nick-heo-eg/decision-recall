@@ -66,7 +66,7 @@ You just answer `y/n/e`. No formatting required.
 
 Both Korean and English forms work. The extractor accepts both.
 
-When markers appear in a conversation, the `decision-extractor` agent appends them to a local file (`state/recall_trace.jsonl`). The `/recall` command reads that file back.
+When markers appear in a conversation, the `decision-extractor` agent appends them to a local file (`~/decision-recall/state/recall_trace.jsonl`). The `/recall` command reads that file back.
 
 ## Install (5 minutes)
 
@@ -116,7 +116,7 @@ Full guide: [docs/install_guide.md](docs/install_guide.md)
 - `.gitignore` excludes it. It is never committed.
 - The skill makes no network calls beyond what Claude Code itself does.
 - The author of this skill **cannot access your trace**.
-- To delete everything: `rm state/recall_trace.jsonl`
+- To delete everything: `rm ~/decision-recall/state/recall_trace.jsonl`
 
 Details: [docs/privacy.md](docs/privacy.md)
 

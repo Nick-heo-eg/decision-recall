@@ -2,8 +2,9 @@
 
 ## Your data stays on your machine
 
-- The trace is stored in `state/recall_trace.jsonl`, in this repo
-- `.gitignore` excludes it from commits
+- The trace is stored in `~/decision-recall/state/recall_trace.jsonl` (single canonical path — same across all projects)
+- Override with `$DECISION_RECALL_TRACE` env if you want it elsewhere
+- `.gitignore` excludes the `state/` directory from commits
 - The skill never transmits the trace to any server
 - The author of this skill **cannot access your trace**, period
 
@@ -11,7 +12,7 @@
 
 | File | Direction | Purpose |
 |---|---|---|
-| `state/recall_trace.jsonl` | read + append | your decision history |
+| `~/decision-recall/state/recall_trace.jsonl` | read + append | your decision history |
 | `~/.claude/skills/decision-recall/SKILL.md` | read | skill orchestrator |
 | `~/.claude/agents/*.md` | read | agent definitions |
 
@@ -27,7 +28,7 @@ When Claude runs an agent, the agent's reasoning happens through Claude's API. T
 ## Deletion
 
 ```bash
-rm state/recall_trace.jsonl
+rm ~/decision-recall/state/recall_trace.jsonl
 ```
 
 That's it. There is no backup, no sync, no copy.

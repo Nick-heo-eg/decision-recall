@@ -3,7 +3,7 @@ description: Show recent decisions, or filter by date/topic/keyword
 argument-hint: [optional query: date, topic, or keyword]
 ---
 
-Invoke the **recall-viewer** agent to display past judgments from `state/recall_trace.jsonl`.
+Invoke the **recall-viewer** agent to display past judgments from `~/decision-recall/state/recall_trace.jsonl` (or `$DECISION_RECALL_TRACE` if set).
 
 Query: $ARGUMENTS
 

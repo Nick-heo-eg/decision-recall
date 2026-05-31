@@ -122,4 +122,4 @@ rm ~/.claude/agents/decision-extractor.md ~/.claude/agents/recall-viewer.md
 rm -rf ~/decision-recall
 ```
 
-Your trace (`state/recall_trace.jsonl`) is deleted with the directory.
+Your trace (`~/decision-recall/state/recall_trace.jsonl`) is deleted with the `rm -rf ~/decision-recall` step.

@@ -44,7 +44,7 @@
 
 > "decision-extractor 돌려"
 
-Claude가 `state/recall_trace.jsonl`에 한 줄씩 추가하고 결과를 알려줌.
+Claude가 `~/decision-recall/state/recall_trace.jsonl`에 한 줄씩 추가하고 결과를 알려줌. (이 파일이 모든 프로젝트에서 공통으로 쌓이는 단일 trace — 프로젝트별로 쪼개지지 않음.)
 
 ### 또는: Claude가 자동으로 제안 (auto-suggest)
 

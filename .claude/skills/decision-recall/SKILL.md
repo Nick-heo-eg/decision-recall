@@ -65,12 +65,12 @@ Three marker types:
 
 Both Korean and English forms are valid. The extractor accepts both.
 
-Each marker captured with `topic | one-line content` format, appended to `state/recall_trace.jsonl`.
+Each marker captured with `topic | one-line content` format, appended to `~/decision-recall/state/recall_trace.jsonl` (single canonical path — same across all projects; override with `$DECISION_RECALL_TRACE` env if needed).
 
 ## When to invoke which agent
 
 - **decision-extractor**: Called when meaningful decisions/analyses/principles appear in the conversation. Scans the assistant's most recent response for the three marker types, normalizes, and appends to trace.
-- **recall-viewer**: Called when user invokes `/recall` (timeline view) or asks "why did I decide X?". Loads `state/recall_trace.jsonl`, filters by date/topic/keyword, and shows results.
+- **recall-viewer**: Called when user invokes `/recall` (timeline view) or asks "why did I decide X?". Loads `~/decision-recall/state/recall_trace.jsonl` (or `$DECISION_RECALL_TRACE` if set), filters by date/topic/keyword, and shows results.
 
 ## References
 
@@ -79,7 +79,7 @@ Each marker captured with `topic | one-line content` format, appended to `state/
 
 ## Privacy invariant (★ critical)
 
-- Trace lives in **`state/recall_trace.jsonl` (local only)** — never committed (`.gitignore`)
+- Trace lives in **`~/decision-recall/state/recall_trace.jsonl` (local only)** — never committed (`.gitignore`)
 - This skill does **not transmit your trace to any server**
 - Skill installer (the person who made this) **cannot access your trace**
 - Your trace is yours; deletion = remove the file

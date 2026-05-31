@@ -5,7 +5,7 @@
 #   - Adds a Stop hook entry that runs hooks/auto_capture.py after every
 #     Claude response
 #   - Captures markers (결정/판단/원칙 or decision/analysis/principle)
-#     into your local state/recall_trace.jsonl automatically
+#     into ~/decision-recall/state/recall_trace.jsonl automatically
 #
 # Run from anywhere — script resolves paths via $(dirname).
 # Idempotent: re-running won't add duplicate entries.
