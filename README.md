@@ -44,9 +44,11 @@ It's a memory aid. You judge. The tool returns the judgment when you ask.
 
 ## How it works
 
-Two ways to capture:
+Three ways to capture, in order of automation:
 
-**1. Auto-suggest (default)** — Claude watches the conversation. When a clear decision happens, it asks:
+**1. Auto-capture (Stop hook, opt-in)** — Once you install the included hook, every Claude response is scanned for markers and matching lines are appended to your trace automatically. Zero clicks. See [Install the auto-capture hook](#install-the-auto-capture-hook-optional-recommended).
+
+**2. Auto-suggest (default, no install)** — Claude watches the conversation. When a clear decision happens, it asks:
 
 > 📓 Want me to record this as a `decision` marker?
 > `decision: vendor-choice | Picked A over B — SLA matters for compliance`
@@ -54,7 +56,7 @@ Two ways to capture:
 
 You just answer `y/n/e`. No formatting required.
 
-**2. Manual** — write the marker yourself if you prefer:
+**3. Manual** — write the marker yourself if you prefer:
 
 | Marker | When to use | Example |
 |---|---|---|
@@ -84,6 +86,16 @@ ln -s ~/decision-recall/.claude/agents/recall-viewer.md ~/.claude/agents/recall-
 ```
 
 Verify: type `/recall` in Claude Code. You should see `no trace yet, start using the skill`.
+
+### Install the auto-capture hook (optional, recommended)
+
+To capture markers automatically without `y/n/e` prompts:
+
+```bash
+~/decision-recall/hooks/install_hook.sh
+```
+
+Then restart Claude Code. From then on, every marker Claude writes is auto-saved to your trace. Uninstall: remove the entry from `~/.claude/settings.json` under `hooks.Stop`.
 
 Full guide: [docs/install_guide.md](docs/install_guide.md)
 

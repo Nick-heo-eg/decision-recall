@@ -93,12 +93,32 @@ You should see your entry.
 **Markers extracted but content is empty**
 → Content must be ≥ 10 characters. Tighten your `| ...` portion.
 
+## Step 6 (optional): install the auto-capture hook
+
+By default, Claude will *ask* before saving a marker (`y/n/e`). If you want it to save **automatically** with no prompts:
+
+```bash
+~/decision-recall/hooks/install_hook.sh
+```
+
+What it does:
+- Adds one entry to `~/.claude/settings.json` under `hooks.Stop`
+- After every Claude response, the hook scans for markers (`결정/판단/원칙` or `decision/analysis/principle`) and appends matches to `~/decision-recall/state/recall_trace.jsonl`
+- Idempotent — re-running won't duplicate the entry
+- Self-contained: no network calls, no external dependencies, never blocks Claude
+
+Restart Claude Code after install.
+
+To uninstall the hook only: open `~/.claude/settings.json` and remove the entry under `hooks.Stop` whose `command` references `~/decision-recall/hooks/auto_capture.py`.
+
 ## Uninstall
 
 ```bash
 rm ~/.claude/skills/decision-recall
 rm ~/.claude/commands/recall.md ~/.claude/commands/recall-search.md
 rm ~/.claude/agents/decision-extractor.md ~/.claude/agents/recall-viewer.md
+# If you installed the auto-capture hook, edit ~/.claude/settings.json
+# and remove the entry under hooks.Stop that references auto_capture.py
 rm -rf ~/decision-recall
 ```
 
