@@ -44,7 +44,17 @@ It's a memory aid. You judge. The tool returns the judgment when you ask.
 
 ## How it works
 
-Three marker types, one line each:
+Two ways to capture:
+
+**1. Auto-suggest (default)** — Claude watches the conversation. When a clear decision happens, it asks:
+
+> 📓 Want me to record this as a `decision` marker?
+> `decision: vendor-choice | Picked A over B — SLA matters for compliance`
+> (`y` = save / `n` = skip / `e` = edit)
+
+You just answer `y/n/e`. No formatting required.
+
+**2. Manual** — write the marker yourself if you prefer:
 
 | Marker | When to use | Example |
 |---|---|---|
@@ -52,7 +62,7 @@ Three marker types, one line each:
 | `판단 / analysis` | You found a non-obvious cause or pattern | `analysis: churn \| 60% of churn happens in week 1 — onboarding is the lever` |
 | `원칙 / principle` | You set a rule going forward | `principle: pr-size \| Every PR over 500 lines must be split` |
 
-Both Korean and English forms work — use whichever feels natural. The extractor accepts both.
+Both Korean and English forms work. The extractor accepts both.
 
 When markers appear in a conversation, the `decision-extractor` agent appends them to a local file (`state/recall_trace.jsonl`). The `/recall` command reads that file back.
 

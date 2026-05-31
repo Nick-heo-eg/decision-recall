@@ -15,16 +15,55 @@ Captures decisions, analyses, and principles from your Claude Code conversations
 - User invokes `/recall` or `/recall-search`
 - User asks "why did I decide X?" or "what did I conclude about Y?"
 - User says "remember when we decided..."
-- A meaningful judgment is being made and should be logged
+
+## Auto-suggest mode (proactive)
+
+When the user reaches a clear judgment moment in conversation, **suggest** logging it — don't auto-save without permission.
+
+Trigger to suggest:
+- User explicitly states a choice ("Let's go with A", "We'll skip B", "Decided to ...")
+- User identifies a non-obvious cause or pattern ("Turns out the issue is X, not Y")
+- User sets a rule for future behavior ("From now on, we'll always ...")
+
+When triggered, ask exactly:
+
+> 📓 Want me to record this as a `<type>` marker?
+>
+> ```
+> <type>: <topic-slug> | <one-line content>
+> ```
+>
+> (`y` = save / `n` = skip / `e` = let me edit first)
+
+Rules for the suggestion:
+1. **Auto-generate the marker** from conversation context (topic + content) — don't ask the user to write it
+2. **Max 1 suggestion per assistant turn** (no spam)
+3. **Don't suggest** for: routine status, code edits, casual questions, things already visible in git/code
+4. **Don't suggest** if 3 markers were already saved in the last 10 turns (avoid over-marking)
+5. On `y`: run `decision-extractor` agent with the proposed marker
+6. On `n`: skip silently, do not ask again about the same topic
+7. On `e`: show the proposed marker, let user reword, then save
+
+## Manual mode (always available)
+
+User can also write markers directly:
+
+```
+결정 / decision: <topic> | <content>
+판단 / analysis: <topic> | <content>
+원칙 / principle: <topic> | <content>
+```
+
+When manual markers appear in conversation, run `decision-extractor` automatically (no suggestion needed — user already decided).
 
 ## How it works
 
-Three marker types automatically extracted from conversations:
+Three marker types:
 - `결정 / decision:` — a choice was made (what to do)
 - `판단 / analysis:` — an observation or analysis (what was found)
 - `원칙 / principle:` — a rule or pattern (what holds going forward)
 
-Both Korean and English forms are valid. Write whichever feels natural; the extractor accepts both.
+Both Korean and English forms are valid. The extractor accepts both.
 
 Each marker captured with `topic | one-line content` format, appended to `state/recall_trace.jsonl`.
 

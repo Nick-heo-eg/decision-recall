@@ -46,6 +46,16 @@
 
 Claude가 `state/recall_trace.jsonl`에 한 줄씩 추가하고 결과를 알려줌.
 
+### 또는: Claude가 자동으로 제안 (auto-suggest)
+
+평소처럼 대화하다가 결정이 나오면 Claude가 알아서 물어봐:
+
+> 📓 Want me to record this as a `decision` marker?
+> `decision: 친구회사제안 | A 친구 스타트업 합류 거절, 관계 리스크 + 현직 마무리 우선`
+> (`y` = save / `n` = skip / `e` = edit)
+
+`y` 한 번 누르면 끝. 형식 외울 필요 없음. 매번 묻는 게 부담스러우면 `n` 하면 다시 안 물음.
+
 ## Step 3 — 바로 확인
 
 ```
