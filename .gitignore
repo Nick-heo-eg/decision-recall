@@ -1,0 +1,12 @@
+# Local trace — never commit
+state/
+*.jsonl
+
+# Editor
+.DS_Store
+*.swp
+.vscode/
+
+# Python (if any helper scripts get added)
+__pycache__/
+*.pyc
