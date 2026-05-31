@@ -9,7 +9,7 @@
 ## Step 1: Clone
 
 ```bash
-git clone https://github.com/<owner>/decision-recall.git ~/decision-recall
+git clone https://github.com/Nick-heo-eg/decision-recall.git ~/decision-recall
 ```
 
 ## Step 2: Link the skill

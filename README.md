@@ -22,7 +22,7 @@ This skill records the reasoning at the moment it happens, in a tiny, structured
 
 ```bash
 # 1. Clone into your project (or anywhere in your home dir)
-git clone https://github.com/<owner>/decision-recall.git ~/decision-recall
+git clone https://github.com/Nick-heo-eg/decision-recall.git ~/decision-recall
 
 # 2. Symlink the skill into Claude Code's skill directory
 mkdir -p ~/.claude/skills
