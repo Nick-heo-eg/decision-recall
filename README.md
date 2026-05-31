@@ -95,7 +95,14 @@ To capture markers automatically without `y/n/e` prompts:
 ~/decision-recall/hooks/install_hook.sh
 ```
 
-Then restart Claude Code. From then on, every marker Claude writes is auto-saved to your trace. Uninstall: remove the entry from `~/.claude/settings.json` under `hooks.Stop`.
+Then restart Claude Code. The hook reads the session transcript (per Claude Code's Stop hook spec) and appends matching markers to `~/decision-recall/state/recall_trace.jsonl`. Uninstall: remove the entry from `~/.claude/settings.json` under `hooks.Stop`.
+
+Verify the hook is working:
+
+```bash
+# After triggering a few markers in a Claude Code session
+tail -3 ~/decision-recall/state/recall_trace.jsonl
+```
 
 Full guide: [docs/install_guide.md](docs/install_guide.md)
 
@@ -105,7 +112,7 @@ Full guide: [docs/install_guide.md](docs/install_guide.md)
 
 ## Privacy
 
-- Your trace lives in **one local file**: `state/recall_trace.jsonl`
+- Your trace lives in **one local file**: `~/decision-recall/state/recall_trace.jsonl` (single canonical path — never split per project)
 - `.gitignore` excludes it. It is never committed.
 - The skill makes no network calls beyond what Claude Code itself does.
 - The author of this skill **cannot access your trace**.

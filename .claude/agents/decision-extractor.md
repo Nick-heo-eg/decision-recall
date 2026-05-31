@@ -36,20 +36,31 @@ analysis: api-latency | p99 spiked after deploy 142
 
 ## Output format (JSONL append)
 
-For each marker, append one line to `state/recall_trace.jsonl`:
+For each marker, append one line to the local trace file (see "Trace file location" below):
 
 ```json
 {"trace_id": "<8-char hex>", "timestamp": "<ISO 8601>", "type": "decision|analysis|principle", "topic": "<topic>", "content": "<one-line>", "source": "live"}
 ```
 
+## Trace file location (canonical)
+
+1. `$DECISION_RECALL_TRACE` env var (if set)
+2. `~/decision-recall/state/recall_trace.jsonl` (canonical default)
+
+**Do NOT** fall back to cwd-relative `state/recall_trace.jsonl`. The trace must live in one place across all projects, not split per cwd. The Stop hook (`hooks/auto_capture.py`) uses the same lookup.
+
 ## Steps
 
-1. Use `Bash` to ensure `state/` directory exists: `mkdir -p state`
-2. Use `Read` on `state/recall_trace.jsonl` to load last 50 entries for dedup (file may not exist yet — handle gracefully)
+1. Resolve trace path via the 3-step lookup above:
+   ```bash
+   TRACE_PATH="${DECISION_RECALL_TRACE:-${HOME}/decision-recall/state/recall_trace.jsonl}"
+   mkdir -p "$(dirname "$TRACE_PATH")"
+   ```
+2. Use `Read` on `$TRACE_PATH` to load last 50 entries for dedup (file may not exist yet — handle gracefully)
 3. Parse the assistant's last message for markers
 4. Generate trace_id (8-char md5 of timestamp) for each new marker
-5. Append each new line to `state/recall_trace.jsonl` (atomic write — one entry per line, JSON Lines format)
-6. Report: count of new markers added + sample of first one
+5. Append each new line to `$TRACE_PATH` (atomic write — one entry per line, JSON Lines format)
+6. Report: count of new markers added + sample of first one + which path was used
 
 ## When to skip
 
@@ -60,4 +71,4 @@ For each marker, append one line to `state/recall_trace.jsonl`:
 
 ## Privacy
 
-This agent only writes to `state/recall_trace.jsonl` in the project root. Never transmits data anywhere.
+This agent only writes to the local trace file (resolved per "Trace file location" above). Never transmits data anywhere.

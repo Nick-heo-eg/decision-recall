@@ -5,40 +5,42 @@ DECISION RECALL — self-contained Stop hook
 ═══════════════════════════════════════════════════════════════════════
 
 What it does:
-  Every time Claude finishes a response, scan the message body for markers
-  matching one of:
+  Every time Claude finishes a response, this Stop hook reads the session
+  transcript, extracts the last assistant message, and scans it for markers:
     결정 / decision: <topic> | <one-line content>
     판단 / analysis: <topic> | <one-line content>
     원칙 / principle: <topic> | <one-line content>
 
-  Each match is appended to a local JSONL trace file. No network, no
-  external dependencies, no LLM calls. Pure regex + file append.
+  Each match is appended to a single canonical JSONL trace file.
 
-Where it appends:
-  Tries (in order, first writable wins):
-    1. $DECISION_RECALL_TRACE (env override)
-    2. ~/decision-recall/state/recall_trace.jsonl
-    3. ./state/recall_trace.jsonl (cwd-relative)
+Trace file location (resolved in this order):
+  1. $DECISION_RECALL_TRACE (env override)
+  2. ~/decision-recall/state/recall_trace.jsonl  ← canonical default
 
-Format of each entry (one JSON object per line):
-  {
-    "trace_id":  "<8-char hex>",
-    "timestamp": "<ISO 8601 with tz>",
-    "type":      "decision" | "analysis" | "principle",
-    "topic":     "<topic-slug>",
-    "content":   "<one-line content>",
-    "source":    "auto"          ← hook-captured (vs "live" for manual)
-  }
+  Note: cwd-relative fallback is intentionally NOT used. In a multi-project
+  workflow the trace must live in one place, not split per project.
 
-Rules (constants below):
+Input contract (Claude Code Stop hook):
+  stdin = JSON with:
+    - transcript_path: absolute path to session .jsonl
+    - cwd, session_id, hook_event_name, stop_hook_active
+
+  We open transcript_path, scan from the end for the last entry whose
+  message.role == "assistant", and use that message's text as the source.
+
+  (Older hook spec used a `last_assistant_message` field directly in stdin.
+  We support it as a fallback in case the runtime still provides it.)
+
+Rules:
   - content < 10 chars  → skipped (anti-noise)
   - max 5 markers/turn  → over-marking signal, only first 5 saved
   - dedup by exact (type, topic, content) against last 50 entries
+  - stop_hook_active == True → exit immediately (avoid recursion)
   - fail silent — never block Claude, never raise
 
 Privacy:
-  This hook never reads, transmits, or stores anything from outside the
-  last assistant message text. The trace file is local-only.
+  This hook never reads files outside the transcript Claude itself passed
+  to us. Trace file is local-only.
 """
 from __future__ import annotations
 
@@ -60,7 +62,7 @@ MARKER_TYPE = {
 }
 
 MARKER_RE = re.compile(
-    r"^\s*(결정|판단|원칙|decision|analysis|principle)\s*[/／]?\s*(?:결정|판단|원칙|decision|analysis|principle)?\s*:\s*([^\|]+?)\s*\|\s*(.+?)\s*$",
+    r"^[\s\-\*•]*(결정|판단|원칙|decision|analysis|principle)\s*[/／]?\s*(?:결정|판단|원칙|decision|analysis|principle)?\s*:\s*([^\|]+?)\s*\|\s*(.+?)\s*$",
     re.MULTILINE | re.IGNORECASE,
 )
 
@@ -70,13 +72,59 @@ DEDUP_WINDOW = 50
 
 
 def trace_path() -> Path:
+    """Resolve canonical trace path. Never cwd-relative — must be single source."""
     env = os.environ.get("DECISION_RECALL_TRACE")
     if env:
         return Path(env).expanduser()
-    home = Path.home() / "decision-recall" / "state" / "recall_trace.jsonl"
-    if home.parent.parent.exists():
-        return home
-    return Path.cwd() / "state" / "recall_trace.jsonl"
+    return Path.home() / "decision-recall" / "state" / "recall_trace.jsonl"
+
+
+def extract_text_from_transcript(transcript_path: str) -> str:
+    """Read transcript JSONL, return text of the last assistant message.
+
+    Transcript format: one JSON object per line. Each line typically has:
+      {"type": "assistant", "message": {"role": "assistant", "content": [...]}}
+    where content is a list of blocks (text, tool_use, etc.).
+
+    We're tolerant: handle missing fields, string content, list content.
+    Return "" on any failure.
+    """
+    try:
+        p = Path(transcript_path)
+        if not p.exists():
+            return ""
+        # Tail-read: scan backward for last assistant entry
+        lines = p.read_text(errors="replace").splitlines()
+    except Exception:
+        return ""
+
+    for raw in reversed(lines):
+        if not raw.strip():
+            continue
+        try:
+            entry = json.loads(raw)
+        except Exception:
+            continue
+        # Different shapes seen in the wild — try a few keys
+        msg = entry.get("message") or entry
+        role = msg.get("role") or entry.get("type")
+        if role != "assistant":
+            continue
+        content = msg.get("content", "")
+        if isinstance(content, str):
+            return content
+        if isinstance(content, list):
+            parts: list[str] = []
+            for block in content:
+                if isinstance(block, dict):
+                    if block.get("type") == "text" and "text" in block:
+                        parts.append(block["text"])
+                    elif "text" in block:
+                        parts.append(str(block["text"]))
+            if parts:
+                return "\n".join(parts)
+        # Unknown shape — keep scanning earlier entries
+    return ""
 
 
 def load_recent(path: Path, n: int = DEDUP_WINDOW) -> list[dict]:
@@ -121,8 +169,21 @@ def main() -> int:
     except Exception:
         return 0
 
-    text = data.get("last_assistant_message", "")
-    if not text or len(text) > 50000:
+    # Avoid recursion if the hook itself triggers another Stop
+    if data.get("stop_hook_active"):
+        return 0
+
+    # Primary path: transcript-based (current Claude Code spec)
+    text = ""
+    transcript_path = data.get("transcript_path")
+    if transcript_path:
+        text = extract_text_from_transcript(transcript_path)
+
+    # Fallback: legacy inline field (older runtime / test harness)
+    if not text:
+        text = data.get("last_assistant_message", "")
+
+    if not text or len(text) > 200000:
         return 0
 
     matches = MARKER_RE.findall(text)
